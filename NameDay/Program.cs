@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace NameDay
 {
-    class Program
+    public class Program
     {
         static void Main(string[] args)
         {
@@ -27,40 +27,34 @@ namespace NameDay
             }
         }
 
+        // REPL 
         private static void evaluateUserInput(List<string> csvNames, string userInput)
         {
-            var namesOfTheDay = "";
             if (userInput == "q" || userInput == "Q")
             {
                 Console.WriteLine("bye bye... ");
                 return;
             }
-            else if (tryGetNames(csvNames, userInput, out namesOfTheDay))
+
+            DateTime date;
+            if (DateTime.TryParse(userInput, out date))
             {
-                Console.WriteLine(namesOfTheDay);
+                Console.WriteLine(string.Format("{0} : {1}", userInput, getNameByDate(csvNames, date)));
             }
             else
             {
                 Console.WriteLine("Input could not be parsed as a valid date");
             }
-            Console.WriteLine("Please, provide Date to get Names, or press 'q' + 'ENTER' to exit");
 
+            Console.WriteLine("Please, provide Date to get Names, or press 'q' + 'ENTER' to exit");
             var consoleInput = Console.ReadLine();
             evaluateUserInput(csvNames, consoleInput);
         }
 
-        private static bool tryGetNames(List<string> csvNames, string input, out string namesOfTheDay)
+        public static string getNameByDate(List<string> csvNames, DateTime date)
         {
-            DateTime date;
-            if (DateTime.TryParse(input, out date))
-            {
-                var dateNameLine = csvNames.Where(d => (d.StartsWith(date.Day + "." + date.Month))).FirstOrDefault();
-                namesOfTheDay = string.IsNullOrEmpty(dateNameLine) ? "no name for this date." : dateNameLine.Split(';')[1];
-                return true;
-            }
-            namesOfTheDay = "";
-            return false;
+            var dateNameLine = csvNames.Where(d => (d.StartsWith(date.Day + "." + date.Month))).FirstOrDefault();
+            return string.IsNullOrEmpty(dateNameLine) ? "no name for this date." : dateNameLine.Split(';')[1];
         }
-
     }
 }
